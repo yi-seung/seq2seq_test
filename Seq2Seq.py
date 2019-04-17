@@ -121,6 +121,8 @@ n_class = n_input = dic_len
 #########
 # 신경망 모델 구성
 ######
+global_step = tf.Variable(0, trainable=False, name='global_step')
+
 # Seq2Seq 모델은 인코더의 입력과 디코더의 입력의 형식이 같다.
 # [batch size, time steps, input size]
 enc_input = tf.placeholder(tf.float64, [None, None, n_input])
@@ -167,7 +169,7 @@ sess = tf.Session()
 
 saver = tf.train.Saver(tf.global_variables()) # 모델 저장을 위한 선언
 
-ckpt = tf.train.get_checkpoint_state('./model')
+ckpt = tf.train.get_checkpoint_state('./')
 if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path): # 저장된 모델이 있으면 활용
     saver.restore(sess, ckpt.model_checkpoint_path)
 else:
@@ -187,7 +189,7 @@ for epoch in range(total_epoch):
 print('최적화 완료!')
 
 # 최적화가 끝난 뒤, 변수를 저장합니다.
-saver.save(sess, './model/yst.ckpt', global_step=global_step)
+saver.save(sess, './model.ckpt', global_step=global_step)
 
 #########
 # 번역 테스트
