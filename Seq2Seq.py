@@ -3,15 +3,15 @@
 import tensorflow as tf
 import numpy as np
 
-with open("NIV_new.txt", "r", encoding="utf-8") as f_en:
+with open("NIV.txt", "r", encoding="utf-8") as f_en:
     lines_en = f_en.readlines()
-with open("개역개정4판_신약.txt", "r", encoding="utf-8") as f_ko:
+with open("개역개정4판.txt", "r", encoding="utf-8") as f_ko:
     lines_ko = f_ko.readlines()
 
 seq_data = []
 temp_data = [" ", " "]
 
-for i in range(100):
+for i in range(200):
     temp_data = ["{0:<512}".format(lines_en[i]), "{0:<256}".format(lines_ko[i])]
     seq_data.append(temp_data)
 
@@ -111,9 +111,9 @@ def make_batch(seq_data):
 #########
 # 옵션 설정
 ######
-learning_rate = 0.003
-n_hidden = 256
-total_epoch = 300
+learning_rate = 0.0001
+n_hidden = 512
+total_epoch = 10
 # 입력과 출력의 형태가 one-hot 인코딩으로 같으므로 크기도 같다.
 n_class = n_input = dic_len
 
@@ -164,7 +164,14 @@ optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 # 신경망 모델 학습
 ######
 sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+
+saver = tf.train.Saver(tf.global_variables()) # 모델 저장을 위한 선언
+
+ckpt = tf.train.get_checkpoint_state('./model')
+if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path): # 저장된 모델이 있으면 활용
+    saver.restore(sess, ckpt.model_checkpoint_path)
+else:
+    sess.run(tf.global_variables_initializer())
 
 input_batch, output_batch, target_batch = make_batch(seq_data)
 
@@ -179,6 +186,8 @@ for epoch in range(total_epoch):
 
 print('최적화 완료!')
 
+# 최적화가 끝난 뒤, 변수를 저장합니다.
+saver.save(sess, './model/yst.ckpt', global_step=global_step)
 
 #########
 # 번역 테스트
@@ -213,6 +222,6 @@ def translate(word):
 
 
 print('\n=== 번역 테스트 ===')
-
-print('word ->', translate("{0:<512}".format('Mat 1:1 A record of the genealogy of Jesus Christ the son of David, the son of Abraham')))
+print('문장1 ->', translate("{0:<512}".format('Mat 1:1 A record of the genealogy of Jesus Christ the son of David, the son of Abraham')))
+print('문장2 ->', translate("{0:<512}".format('Gen 1:1 In the beginning God created the heavens and the earth.')))
 
