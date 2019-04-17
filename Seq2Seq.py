@@ -3,36 +3,14 @@
 import tensorflow as tf
 import numpy as np
 
-import codecs
-from bs4 import BeautifulSoup
-from konlpy.tag import Twitter
-# utf-16 인코딩으로 파일을 열고 글자를 출력하기 --- (※1)
-fp_en = codecs.open("NIV_new.txt", "r", encoding="utf-8")
-fp_ko = codecs.open("개역개정4판_신약.txt", "r", encoding="utf-8")
+with open("NIV_new.txt", "r", encoding="utf-8") as f_en:
+    lines_en = f_en.readlines()
+with open("개역개정4판_신약.txt", "r", encoding="utf-8") as f_ko:
+    lines_ko = f_ko.readlines()
 
-soup_en = BeautifulSoup(fp_en, "html.parser")
-soup_ko = BeautifulSoup(fp_ko, "html.parser")
-
-#body = soup.select_one("body > text")
-#text = body.getText()
-text_en = soup_en.getText()
-text_ko = soup_ko.getText()
-# 텍스트를 한 줄씩 처리하기 --- (※2)
-twitter = Twitter()
-word_dic = {}
-lines_en = text_en.split("\r\n")
-lines_ko = text_ko.split("\r\n")
-
-#space500 = " "*500
-#space240 = " "*240
-
-
-#print(lines_en[0], lines_ko[0])
-#print(str(len(lines_en)) + " " + str(len(lines_ko)))
 seq_data = []
 temp_data = [" ", " "]
-#space_data = [ space500, space240 ]
-#for i in range(len(lines_en)):
+
 for i in range(100):
     temp_data = ["{0:<512}".format(lines_en[i]), "{0:<256}".format(lines_ko[i])]
     seq_data.append(temp_data)
