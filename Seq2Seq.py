@@ -111,9 +111,9 @@ def make_batch(seq_data):
 #########
 # 옵션 설정
 ######
-learning_rate = 0.01
+learning_rate = 0.0001
 n_hidden = 512
-total_epoch = 100
+total_epoch = 10000
 # 입력과 출력의 형태가 one-hot 인코딩으로 같으므로 크기도 같다.
 n_class = n_input = dic_len
 
@@ -185,11 +185,10 @@ for epoch in range(total_epoch):
 
     print('Epoch:', '%04d' % (epoch + 1),
           'cost =', '{:.6f}'.format(loss))
-
+    saver.save(sess, './model.ckpt', global_step=global_step)
 print('최적화 완료!')
 
-# 최적화가 끝난 뒤, 변수를 저장합니다.
-saver.save(sess, './model.ckpt', global_step=global_step)
+
 
 #########
 # 번역 테스트
